@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Стили для flash-сообщений (без изменений структуры) */
+        .flash-message {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            animation: flashFadeOut 5s forwards;
+        }
+        .flash-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .flash-success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        @keyframes flashFadeOut {
+            0% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; height: 0; padding: 0; margin: 0; overflow: hidden; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>
+    <b>vlog flow</b><br>
+    <a href="{{url_for('profile')}}">отмена</a>
+    <hr>
+
+    <!-- Блок сообщений (без изменений) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form action="/update_new_profie" method="post">
+        <input type="text" name="new_name" placeholder="введите новое имя"><br>
+        <input type="password" name="password" placeholder="введите текущий пароль" required> обязательно<br>  
+        <input type="password" name="new_password" placeholder="введите новый пароль"><br>
+        <button type="submit">изменить</button><br>
+    </form>
+    <hr>
+</h1>
+
+</body>
+</html>

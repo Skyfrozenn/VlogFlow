@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vlog Flow - Profile</title>
+    <style>
+        .avatar {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .post-image {
+            max-width: 50%;
+            max-height: 300px;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            margin: 10px 0;
+            object-fit: contain;
+        }
+
+        .post {
+            width: 100%;
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            clear: both;
+        }
+
+        .post-title,
+        .post-description,
+        .post-date,
+        .post-category {
+            display: block;
+            width: 100%;
+            margin-top: 12px;
+            text-align: left;
+            clear: both;
+        }
+
+        .flash-message {
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 5px;
+            position: relative;
+            animation: flashFadeOut 5s forwards;
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes flashFadeOut {
+            0% { opacity: 1; max-height: 100px; }
+            70% { opacity: 1; max-height: 100px; }
+            100% { opacity: 0; max-height: 0; padding: 0; margin: 0; overflow: hidden; }
+        }
+        
+        .flash-close {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .comment {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 2px solid #eee;
+        }
+        
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vlog Flow</h1>
+    
+    <!-- Flash сообщения -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                    <span class="flash-close" onclick="this.parentElement.style.display='none'">×</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('exit_profile') }}" method="POST">
+        <button type="submit">Выйти</button>
+    </form>
+    <br>
+    <a href="{{url_for('profile')}}">Моя страница</a>
+    <hr>
+    
+    <!-- Аватар -->
+    <div class="avatar-container">
+        {% if user.uploaded_photo %}
+            <img class="avatar" src="data:image/*;base64,{{ user.uploaded_photo }}" alt="Profile Picture">
+        {% else %}
+            <img class="avatar" src="{{ url_for('static', filename=user.photo) }}" alt="Profile Picture">
+        {% endif %}
+    </div>
+    
+    <!-- Форма обновления фото -->
+    {% if is_own_profile %}
+        <form action="{{ url_for('update_photo') }}" method="post" enctype="multipart/form-data">
+            <input type="file" name="photo" accept="image/*" required>
+            <button type="submit">Изменить фото</button>
+            </form>
+        <hr>
+    {% endif %}
+    
+    
+    <b>{{ user.name }}</b><br><br>
+    <b>Дата Регистрации - {{ user.join }}</b><br>
+
+    {% if is_own_profile %}
+        <a href="{{ url_for('update_page_profile') }}">Изменить профиль</a>
+    <hr>
+    {% endif %}
+    
+    <!-- Форма добавления влога -->
+    {% if is_own_profile %}
+        <b>Добавить влог</b>
+        <form action="/save_new_article" method="post" enctype="multipart/form-data">
+            <input type="file" name="photo" accept="image/*"><br>
+            <input type="text" name="title" placeholder="Название" required><br>
+            <input type="text" name="description" placeholder="Описание" required><br>
+            <input type="text" name="category" placeholder="Категория" required><br>
+            <button type="submit">Добавить</button>
+        </form>
+        <hr>
+    {% endif %}
+    
+    
+    <!-- Список влогов -->
+    <div class="post-container">
+        <h2>Мои влоги</h2>
+        {% for article in user.articles | sort(attribute='date_added', reverse=True) %}
+            <div class="post">
+                {% if article.avatar %}
+                    <img class="post-image" src="data:image/*;base64,{{ article.avatar }}" alt="{{ article.title }}">
+                {% endif %}
+                 
+                <h3 class="post-title">{{ article.title }} </h3>
+
+                {% if is_own_profile %}
+                    <form action="/delete_vlog" method="post">
+
+                        <input type="hidden" name="vlog_id" value="{{article.id}}">
+                        <button type="submit">Удалить влог</button>
+
+                    </form>
+                {% endif %}
+                 
+                <p class="post-description">{{ article.description }}</p>
+                <p class="post-date">Опубликовано: {{ article.date_added }}</p>
+                
+                 
+              
+                <div class="comments-section">
+                    <b>Комментарии:</b><br><br>
+    
+                    {% set ns = namespace(comments_exist=false) %}
+                    {% for com in coments %}
+                        {% if com.article_id == article.id %}
+                            {% set ns.comments_exist = true %}
+                            <div class="comment">
+                            <div class="comment-header">
+
+                            {% if current_user.id == com.user_id %}
+                                <a href="{{url_for('profile')}}">{{ com.author.name }}</a>
+                            {% else %}
+                                <a href="{{url_for('profile', user_id = com.user_id) }}">{{ com.author.name }}</a>
+                            {% endif %}
+                                
+                            
+                            <button onclick="replyTo('{{ com.author.name }}')">Ответить</button>
+                    
+                            {% if current_user.is_authenticated and current_user.id == com.user_id %}
+                                <form action="/delete_coment" method="post" style="display: inline;">
+                                    <input type="hidden" name="comment_id" value="{{ com.id }}">
+                                    <button type="submit">Удалить</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        <p>{{ com.text }}</p>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+    
+    {% if not ns.comments_exist %}
+        <b>Пока нет комментариев</b><br><br>
+    {% endif %}
+</div>
+            
+                <!-- Форма добавления комментария -->
+                <b>Добавить комментарий</b><br>
+                <form action="/add_coment" method="post">
+                    <input type="hidden" name="user_id" value="{{ current_user.id }}">
+                    <input type="hidden" name="article_id" value="{{ article.id }}">
+                    <input type="text" name="text" placeholder="Введите комментарий" id="comment-input">
+                    <button type="submit">Добавить</button>
+                </form>
+                <hr>
+            </div>
+        {% else %}
+            <p>У вас пока нет влогов</p>
+        {% endfor %}
+    </div>
+
+    <script>
+    function replyTo(username) {
+        const input = document.getElementById('comment-input');
+        if (input) {
+            input.value = `@${username}, `;
+            input.focus();
+        }
+    }
+    </script>
+</body>
+</html>
