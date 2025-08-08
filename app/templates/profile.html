@@ -90,7 +90,7 @@
         .post {
             width: 100%;
             margin: 20px 0;
-            padding: 15px;
+            padding: 10px;
             background: rgba(40, 40, 40, 0.8);
             border-radius: 10px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.2);
@@ -293,7 +293,7 @@
                     </div>
                 
                     <!-- Форма добавления комментария -->
-                    <b style="color: white;">Добавить комментарий</b><br>
+                    <b style="color: white;">Добавить комментарий</b><br><br>
                     <form action="/add_coment" method="post">
                         <input type="hidden" name="user_id" value="{{ current_user.id }}">
                         <input type="hidden" name="article_id" value="{{ article.id }}">
