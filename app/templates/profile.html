@@ -5,15 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vlog Flow - Profile</title>
     <style>
+        /* Новые стили только для оформления */
+        body {
+            background: url('/static/images/photo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+        
+        /* Шапка с кнопками справа */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(20, 20, 20, 0.9);
+        }
+        .header h1 {
+            margin: 0;
+            color: white;
+        }
+        .header-nav {
+            display: flex;
+            gap: 15px;
+        }
+        .header-nav a, .header-nav button {
+            color: white;
+            text-decoration: none;
+            background: rgba(40, 40, 40, 0.8);
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .header-nav a:hover, .header-nav button:hover {
+            background: rgba(60, 60, 60, 0.8);
+        }
+        hr {
+            margin: 0;
+            border: none;
+            border-top: 1px solid #444;
+        }
+
+        /* Основной контент */
+        .content {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.85);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Ваши существующие стили (адаптированы под темную тему) */
         .avatar {
             width: 200px;
             height: 200px;
             object-fit: cover;
             border-radius: 10px;
-            border: 3px solid #ddd;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 3px solid #444;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        
         .post-image {
             max-width: 50%;
             max-height: 300px;
@@ -23,17 +87,15 @@
             margin: 10px 0;
             object-fit: contain;
         }
-
         .post {
             width: 100%;
             margin: 20px 0;
             padding: 15px;
-            background: #fff;
+            background: rgba(40, 40, 40, 0.8);
             border-radius: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
             clear: both;
         }
-
         .post-title,
         .post-description,
         .post-date,
@@ -43,8 +105,8 @@
             margin-top: 12px;
             text-align: left;
             clear: both;
+            color: white;
         }
-
         .flash-message {
             padding: 12px;
             margin: 15px 0;
@@ -54,13 +116,11 @@
             opacity: 1;
             transition: all 0.3s ease;
         }
-        
         @keyframes flashFadeOut {
             0% { opacity: 1; max-height: 100px; }
             70% { opacity: 1; max-height: 100px; }
             100% { opacity: 0; max-height: 0; padding: 0; margin: 0; overflow: hidden; }
         }
-        
         .flash-close {
             position: absolute;
             right: 10px;
@@ -68,25 +128,60 @@
             transform: translateY(-50%);
             cursor: pointer;
             font-weight: bold;
+            color: white;
         }
-        
         .comment {
             margin: 10px 0;
             padding: 10px;
-            border-left: 2px solid #eee;
+            border-left: 2px solid #555;
+            background: rgba(50, 50, 50, 0.6);
+            border-radius: 4px;
         }
-        
         .comment-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 5px;
         }
+        
+        /* Кнопки и инпуты */
+        button, input[type="text"], input[type="file"], input[type="password"] {
+            background: rgba(20, 20, 20, 0.9);
+            color: white;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: rgba(40, 40, 40, 0.9);
+        }
+        a {
+            color: #aaa;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: white;
+        }
     </style>
 </head>
 <body>
-    <h1>Vlog Flow</h1>
-    
+    <!-- Новая шапка с кнопками справа -->
+    <div class="header">
+        <h1>Vlog Flow 🍒</h1>
+        <div class="header-nav">
+            <form action="{{ url_for('exit_profile') }}" method="POST" style="margin: 0;">
+                <button type="submit">Выйти</button>
+            </form>
+            <a href="{{url_for('profile')}}">Моя страница</a>
+            <a href="{{url_for('page_vlogs')}}">Все статьи</a>
+            {% if current_user.is_authenticated and current_user.role == "Admin" %}
+                <a href="{{url_for('admin_page')}}">Админ Панель</a>
+            {% endif %}
+        </div>
+    </div>
+    <hr>
+
     <!-- Flash сообщения -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -99,128 +194,120 @@
         {% endif %}
     {% endwith %}
 
-    <form action="{{ url_for('exit_profile') }}" method="POST">
-        <button type="submit">Выйти</button>
-    </form>
-    <br>
-    <a href="{{url_for('profile')}}">Моя страница</a>
-    <hr>
-    
-    <!-- Аватар -->
-    <div class="avatar-container">
-        {% if user.uploaded_photo %}
-            <img class="avatar" src="data:image/*;base64,{{ user.uploaded_photo }}" alt="Profile Picture">
-        {% else %}
-            <img class="avatar" src="{{ url_for('static', filename=user.photo) }}" alt="Profile Picture">
-        {% endif %}
-    </div>
-    
-    <!-- Форма обновления фото -->
-    {% if is_own_profile %}
-        <form action="{{ url_for('update_photo') }}" method="post" enctype="multipart/form-data">
-            <input type="file" name="photo" accept="image/*" required>
-            <button type="submit">Изменить фото</button>
+    <div class="content">
+        <!-- Аватар -->
+        <div class="avatar-container">
+            {% if user.uploaded_photo %}
+                <img class="avatar" src="data:image/*;base64,{{ user.uploaded_photo }}" alt="Profile Picture">
+            {% else %}
+                <img class="avatar" src="{{ url_for('static', filename=user.photo) }}" alt="Profile Picture">
+            {% endif %}
+        </div>
+        
+        <!-- Форма обновления фото -->
+        {% if is_own_profile %}
+            <form action="{{ url_for('update_photo') }}" method="post" enctype="multipart/form-data">
+                <input type="file" name="photo" accept="image/*" required>
+                <button type="submit">Изменить фото</button>
             </form>
-        <hr>
-    {% endif %}
-    
-    
-    <b>{{ user.name }}</b><br><br>
-    <b>Дата Регистрации - {{ user.join }}</b><br>
+            <hr>
+        {% endif %}
+        
+        <b style="color: white;"><p>{{ user.name }}</p> </b><br>
+        <b style="color: white;">Дата Регистрации - {{ user.join }}</b><br><br>
 
-    {% if is_own_profile %}
-        <a href="{{ url_for('update_page_profile') }}">Изменить профиль</a>
-    <hr>
-    {% endif %}
-    
-    <!-- Форма добавления влога -->
-    {% if is_own_profile %}
-        <b>Добавить влог</b>
-        <form action="/save_new_article" method="post" enctype="multipart/form-data">
-            <input type="file" name="photo" accept="image/*"><br>
-            <input type="text" name="title" placeholder="Название" required><br>
-            <input type="text" name="description" placeholder="Описание" required><br>
-            <input type="text" name="category" placeholder="Категория" required><br>
-            <button type="submit">Добавить</button>
-        </form>
-        <hr>
-    {% endif %}
-    
-    
-    <!-- Список влогов -->
-    <div class="post-container">
-        <h2>Мои влоги</h2>
-        {% for article in user.articles | sort(attribute='date_added', reverse=True) %}
-            <div class="post">
-                {% if article.avatar %}
-                    <img class="post-image" src="data:image/*;base64,{{ article.avatar }}" alt="{{ article.title }}">
-                {% endif %}
-                 
-                <h3 class="post-title">{{ article.title }} </h3>
+        {% if is_own_profile %}
+            <a href="{{ url_for('update_page_profile') }}">Изменить профиль</a><br>
+            <p><hr></p>
+        {% endif %}
+        
+        <!-- Форма добавления влога -->
+        {% if is_own_profile %}
+            <b style="color: white;">Добавить влог</b>
+            <form action="/save_new_article" method="post" enctype="multipart/form-data">
+                <input type="file" name="photo" accept="image/*"><br>
+                <input type="text" name="title" placeholder="Название" required><br>
+                <input type="text" name="description" placeholder="Описание" required><br>
+                <input type="text" name="category" placeholder="Категория" required><br>
+                <button type="submit">Добавить</button>
+            </form>
+            <hr>
+        {% endif %}
+        
+        <!-- Список влогов -->
+        <div class="post-container">
+            <h2 style="color: white;">Мои влоги</h2>
+            {% for article in user.articles | sort(attribute='date_added', reverse=True) %}
+                <div class="post">
+                    {% if article.avatar %}
+                        <img class="post-image" src="data:image/*;base64,{{ article.avatar }}" alt="{{ article.title }}">
+                    {% endif %}
+                     
+                    <h3 class="post-title">{{ article.title }}</h3>
 
-                {% if is_own_profile %}
-                    <form action="/delete_vlog" method="post">
-
-                        <input type="hidden" name="vlog_id" value="{{article.id}}">
-                        <button type="submit">Удалить влог</button>
-
-                    </form>
-                {% endif %}
-                 
-                <p class="post-description">{{ article.description }}</p>
-                <p class="post-date">Опубликовано: {{ article.date_added }}</p>
-                
-                 
-              
-                <div class="comments-section">
-                    <b>Комментарии:</b><br><br>
-    
-                    {% set ns = namespace(comments_exist=false) %}
-                    {% for com in coments %}
-                        {% if com.article_id == article.id %}
-                            {% set ns.comments_exist = true %}
-                            <div class="comment">
-                            <div class="comment-header">
-
-                            {% if current_user.id == com.user_id %}
-                                <a href="{{url_for('profile')}}">{{ com.author.name }}</a>
-                            {% else %}
-                                <a href="{{url_for('profile', user_id = com.user_id) }}">{{ com.author.name }}</a>
-                            {% endif %}
-                                
-                            
-                            <button onclick="replyTo('{{ com.author.name }}')">Ответить</button>
+                    {% if is_own_profile or current_user.role == "Admin" %}
+                        <form action="/delete_vlog" method="post">
+                            <input type="hidden" name="vlog_id" value="{{article.id}}">
+                            <input type="hidden" name="method" value="profile">
+                            <button type="submit">Удалить влог</button>
+                        </form>
+                    {% endif %}
+                     
+                    <p class="post-description">{{ article.description }}</p>
+                    <p class="post-date">Опубликовано: {{ article.date_added }}</p>
                     
-                            {% if current_user.is_authenticated and current_user.id == com.user_id %}
-                                <form action="/delete_coment" method="post" style="display: inline;">
-                                    <input type="hidden" name="comment_id" value="{{ com.id }}">
-                                    <button type="submit">Удалить</button>
-                                </form>
+                    <div class="comments-section">
+                        <b style="color: white;">Комментарии:</b><br><br>
+        
+                        {% set ns = namespace(comments_exist=false) %}
+                        {% for com in coments %}
+                            {% if com.article_id == article.id %}
+                                {% set ns.comments_exist = true %}
+                                <div class="comment">
+                                    <div class="comment-header">
+                                        {% if current_user.id == com.user_id %}
+                                            <a href="{{url_for('profile')}}">{{ com.author.name }}</a>
+                                        {% else %}
+                                            <a href="{{url_for('profile', user_id = com.user_id) }}">{{ com.author.name }}</a>
+                                        {% endif %}
+                                        
+                                        <button onclick="replyTo('{{ com.author.name }}')">Ответить</button>
+                                
+                                        {% if current_user.is_authenticated and (current_user.id == com.user_id or current_user.role == "Admin") %}
+                                            <form action="/delete_coment" method="post" style="display: inline;">
+                                                <input type="hidden" name="comment_id" value="{{ com.id }}">
+                                                <input type="hidden" name="method" value="profile">
+                                                <input type="hidden" name="profile_user_id" value="{{ user.id }}">
+                                                <button type="submit">Удалить</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                    <p>{{ com.text }}</p>
+                                </div>
                             {% endif %}
-                        </div>
-                        <p>{{ com.text }}</p>
-                        </div>
+                        {% endfor %}
+        
+                        {% if not ns.comments_exist %}
+                            <b style="color: white;">Пока нет комментариев</b><br><br>
                         {% endif %}
-                    {% endfor %}
-    
-    {% if not ns.comments_exist %}
-        <b>Пока нет комментариев</b><br><br>
-    {% endif %}
-</div>
-            
-                <!-- Форма добавления комментария -->
-                <b>Добавить комментарий</b><br>
-                <form action="/add_coment" method="post">
-                    <input type="hidden" name="user_id" value="{{ current_user.id }}">
-                    <input type="hidden" name="article_id" value="{{ article.id }}">
-                    <input type="text" name="text" placeholder="Введите комментарий" id="comment-input">
-                    <button type="submit">Добавить</button>
-                </form>
-                <hr>
-            </div>
-        {% else %}
-            <p>У вас пока нет влогов</p>
-        {% endfor %}
+                    </div>
+                
+                    <!-- Форма добавления комментария -->
+                    <b style="color: white;">Добавить комментарий</b><br>
+                    <form action="/add_coment" method="post">
+                        <input type="hidden" name="user_id" value="{{ current_user.id }}">
+                        <input type="hidden" name="article_id" value="{{ article.id }}">
+                        <input type="text" name="text" placeholder="Введите комментарий" id="comment-input">
+                        <input type="hidden" name="method" value="profile">
+                        <input type="hidden" name="profile_user_id" value="{{ user.id }}">
+                        <button type="submit">Добавить</button>
+                    </form>
+                    <hr>
+                </div>
+            {% else %}
+                <p style="color: white;">У вас пока нет влогов</p>
+            {% endfor %}
+        </div>
     </div>
 
     <script>

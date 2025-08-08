@@ -3,85 +3,115 @@
 <head>
     <meta charset="utf-8">
     <title>Vlog Flow - Регистрация</title>
+    <style>
+        /* Новые стили (только фон и оверлей) */
+        body {
+            background: url('/static/images/photo.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            min-height: 100vh;
+            color: white;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
         
+        /* Твои существующие стили (не трогал) */
+        .flash-messages {
+            margin: 15px 0;
+        }
+        .flash-error {
+            padding: 10px;
+            background: #ffebee;
+            color: #c62828;
+            border-left: 3px solid #c62828;
+            margin: 5px 0;
+            position: relative;
+        }
+        .flash-success {
+            padding: 10px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 3px solid #2e7d32;
+            margin: 5px 0;
+        }
+        .close-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .login-link {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        /* Дополнил твои стили для читаемости на темном фоне */
+        .logo h1, b, .login-link, .login-link a {
+            color: white;
+        }
+        form {
+            background: rgba(30, 30, 30, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #6a0dad;
+            color: white;
+        }
+        button {
+            background: #6a0dad;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
     <div class="logo">
-        <h1>Vlog Flow</h1>
+        <h1>Vlog Flow 🍒</h1>
         <hr><br><br><br>
-
-
     </div>
-    <b>Регистрация</b><br>
-    <form action="/register" method="post">
-    <input type="text" name="username" placeholder="Введите имя" required>
-    <input type="password" name="password" placeholder="Введите пароль" required>
-    <button type="submit">Зарегистрироваться</button>
     
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash-{{ category }}">
-                        {{ message }}
-                        {% if category == 'error' %}
-                            <span class="close-btn" onclick="this.parentElement.remove()">×</span>
-                        {% endif %}
+    <div style="text-align: center;">
+        <b>Регистрация </b><br>
+        <form action="/register" method="post">
+            <input type="text" name="username" placeholder="Введите имя" required>
+            <input type="password" name="password" placeholder="Введите пароль" required>
+            <button type="submit">Зарегистрироваться</button>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-{{ category }}">
+                                {{ message }}
+                                {% if category == 'error' %}
+                                    <span class="close-btn" onclick="this.parentElement.remove()">×</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-    
-    <p class="login-link">У вас уже есть аккаунт? <a href="{{url_for('login')}}">Войти</a></p>
-</form>
-
-<style>
-    .flash-messages {
-        margin: 15px 0;
-    }
-    .flash-error {
-        padding: 10px;
-        background: #ffebee;
-        color: #c62828;
-        border-left: 3px solid #c62828;
-        margin: 5px 0;
-        position: relative;
-    }
-    .flash-success {
-        padding: 10px;
-        background: #e8f5e9;
-        color: #2e7d32;
-        border-left: 3px solid #2e7d32;
-        margin: 5px 0;
-    }
-    .close-btn {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        font-size: 18px;
-    }
-    .login-link {
-        margin-top: 15px;
-        font-size: 14px;
-    }
-</style>
-     
-
-
-
+                {% endif %}
+            {% endwith %}
+            
+            <p class="login-link">У вас уже есть аккаунт? <a href="{{url_for('login')}}">Войти</a></p>
+        </form>
+    </div>
 </body>
-     
-    
-
-
-
-
-
-
-
-
 </html>

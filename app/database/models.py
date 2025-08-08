@@ -18,6 +18,7 @@ class User(Base):
     photo : Mapped[str]
     uploaded_photo : Mapped[str] = mapped_column(nullable=True)
     password:Mapped[str]
+    role : Mapped[str] = mapped_column(default = "user")
     join : Mapped[datetime] = mapped_column(server_default=func.now()) # время когда юзер зарегался
     
     #связи

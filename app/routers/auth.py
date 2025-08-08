@@ -17,9 +17,12 @@ ph = PasswordHasher(time_cost=3, memory_cost=66536, parallelism=4)
 
 
 class Login(UserMixin):
-    def __init__(self,id, name):
+    def __init__(self,id, name, role):
         self.id = id
         self.name = name
+        self.role = role
+         
+        
          
         
 
@@ -30,7 +33,8 @@ def load_user(user_id):
         if user:
             return Login(
                 id=user.id,
-                name=user.name
+                name=user.name,
+                role = user.role
             )
     return None
         
@@ -69,12 +73,13 @@ def register():
         new_user = User(
             name=username,
             photo=DEFAULT_AVATAR,
-            password=hashed_password
+            password=hashed_password,
+            
         )
         db_session.add(new_user)
         db_session.flush()
         
-        login_user_obj = Login(id=new_user.id, name=new_user.name)
+        login_user_obj = Login(id=new_user.id, name=new_user.name, role = new_user.role)
         login_user(login_user_obj)
         
         

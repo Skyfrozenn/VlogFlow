@@ -31,7 +31,7 @@ def authorization_profile():
              
             if ph.verify(check_user.password, password):
                 # Создаем объект для Flask-Login
-                login_user_obj = Login(id=check_user.id, name=check_user.name)
+                login_user_obj = Login(id=check_user.id, name=check_user.name,role=check_user.role)
                 login_user(login_user_obj)
                  
                 return redirect(url_for('profile'))
